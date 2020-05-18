@@ -3,14 +3,18 @@ import Blog from './components/Blog'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import BlogForm from './components/BlogForm'
+import BlogDetail from './components/BlogDetail'
 import Users from './components/Users'
+import User from './components/User'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
+import userService from './services/users'
 import storage from './utils/storage'
 
 import { useSelector, useDispatch } from 'react-redux'
 import { addBlog, addLike, deleteBlog } from './reducers/blogReducer'
+import { addUser } from './reducers/usersReducer'
 import { updateUser, logoutUser } from './reducers/currentUserReducer'
 import { addNotification, clearNotification } from './reducers/notificationReducer'
 
@@ -40,9 +44,17 @@ const App = () => {
 
   useEffect(() => {
     const currentUser = storage.loadUser()
-    dispatch(updateUser(currentUser))
+    if (currentUser) {
+      dispatch(updateUser(currentUser))
+    }
 
   }, [dispatch])
+
+  useEffect(() => {
+    userService.getAll().then(users =>
+      users.map(user => dispatch(addUser(user))))
+  }, [dispatch])
+
 
   const notifyWith = (message, type = 'success') => {
     dispatch(addNotification(message, type))
@@ -149,6 +161,10 @@ const App = () => {
       <Notification notification={notification} />
 
       <Switch>
+
+        <Route path="/blogs/:id">
+          <BlogDetail handleLike={handleLike} handleRemove={handleRemove} />
+        </Route>
         <Route path="/blogs">
           <h2>blogs</h2>
           <Togglable buttonLabel='create new blog' ref={blogFormRef}>
@@ -164,6 +180,10 @@ const App = () => {
               own={user.username === blog.user.username}
             />
           )}
+        </Route>
+
+        <Route path="/users/:id">
+          <User />
         </Route>
 
         <Route path="/users">
