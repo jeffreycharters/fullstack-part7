@@ -112,6 +112,10 @@ const App = () => {
     storage.logoutUser()
   }
 
+  const handleComment = async (id, comment) => {
+    await blogService.addComment(id, comment)
+  }
+
   if (!user) {
     return (
       <div>
@@ -163,7 +167,7 @@ const App = () => {
       <Switch>
 
         <Route path="/blogs/:id">
-          <BlogDetail handleLike={handleLike} handleRemove={handleRemove} />
+          <BlogDetail handleLike={handleLike} handleRemove={handleRemove} handleComment={handleComment} />
         </Route>
         <Route path="/blogs">
           <h2>blogs</h2>

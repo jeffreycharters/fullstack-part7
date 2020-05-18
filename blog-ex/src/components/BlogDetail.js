@@ -1,12 +1,25 @@
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 
-const BlogDetails = ({ handleLike, handleRemove }) => {
-  const currentUser = useSelector(state => state.currentUser)
+import blogService from '../services/blogs'
+
+const BlogDetails = ({ handleLike, handleRemove, handleComment }) => {
+  const [comment, setComment] = useState('')
+  const [comments, setComments] = useState([])
   const id = useParams().id
+  const currentUser = useSelector(state => state.currentUser)
   const blogs = useSelector(state => state.blogs)
   const blog = blogs.find(blog => blog.id === id)
+
+
+  useEffect(() => {
+    blogService.getComments(id).then(comments =>
+      setComments(comments.map(comment => comment.content))
+    )
+  }, [id])
+
   if (!blog) {
     return null
   }
@@ -17,6 +30,29 @@ const BlogDetails = ({ handleLike, handleRemove }) => {
     border: 'solid',
     borderWidth: 1,
     marginBottom: 5
+  }
+
+  const changeHandler = event => {
+    event.preventDefault()
+    setComment(event.target.value)
+  }
+
+  const newComment = (event) => {
+    event.preventDefault()
+    handleComment(id, comment)
+    setComments(comments.concat(comment))
+  }
+
+  const showComments = comments => {
+    return (
+      <div>
+        <h2>Comments</h2>
+        <ul>
+          {comments.map((comment, i) =>
+            <li key={i}>{comment}</li>)}
+        </ul>
+      </div>
+    )
   }
 
   return (
@@ -33,6 +69,13 @@ const BlogDetails = ({ handleLike, handleRemove }) => {
           : ''
         }
       </div>
+      <div>
+        <form onSubmit={newComment}>
+          Add comment: <input name="content" type="text" value={comment} onChange={changeHandler} />
+          <button type="submit">submit</button>
+        </form>
+      </div>
+      {comments && showComments(comments)}
     </div>
   )
 }
