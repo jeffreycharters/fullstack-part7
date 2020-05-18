@@ -1,51 +1,54 @@
 import React, { useState } from 'react'
 
-const NoteForm = ({ createBlog }) => {
-    const [newTitle, setNewTitle] = useState('')
-    const [newAuthor, setNewAuthor] = useState('')
-    const [newUrl, setNewUrl] = useState('')
+const BlogForm = (props) => {
+    const [title, setTitle] = useState('')
+    const [author, setAuthor] = useState('')
+    const [url, setUrl] = useState('')
 
-    const handleAuthorChange = (event) => setNewAuthor(event.target.value)
-    const handleTitleChange = (event) => setNewTitle(event.target.value)
-    const handleUrlChange = (event) => setNewUrl(event.target.value)
-
-    const addBlog = (event) => {
+    const handleNewBlog = (event) => {
         event.preventDefault()
-        createBlog({
-            title: newTitle,
-            author: newAuthor,
-            url: newUrl,
+
+        props.createBlog({
+            title, author, url
         })
 
-        setNewTitle('')
-        setNewAuthor('')
-        setNewUrl('')
+        setTitle('')
+        setAuthor('')
+        setUrl('')
     }
 
     return (
-        <form onSubmit={addBlog}>
-            Title: <input
-                id="blogTitle"
-                value={newTitle}
-                onChange={handleTitleChange}
-            />
-
-            <br />
-            Author: <input
-                id="blogAuthor"
-                value={newAuthor}
-                onChange={handleAuthorChange}
-            />
-            <br />
-            URL: <input
-                id="blogUrl"
-                value={newUrl}
-                onChange={handleUrlChange}
-            />
-            <br />
-            <button type="submit" id="blogSave">save</button>
-        </form>
+        <div>
+            <h2>create new</h2>
+            <form onSubmit={handleNewBlog}>
+                <div>
+                    author
+          <input
+                        id='author'
+                        value={author}
+                        onChange={({ target }) => setAuthor(target.value)}
+                    />
+                </div>
+                <div>
+                    title
+          <input
+                        id='title'
+                        value={title}
+                        onChange={({ target }) => setTitle(target.value)}
+                    />
+                </div>
+                <div>
+                    url
+          <input
+                        id='url'
+                        value={url}
+                        onChange={({ target }) => setUrl(target.value)}
+                    />
+                </div>
+                <button id="create">create</button>
+            </form>
+        </div>
     )
 }
 
-export default NoteForm
+export default BlogForm
