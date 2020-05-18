@@ -8,8 +8,13 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import storage from './utils/storage'
 
+import { useSelector, useDispatch } from 'react-redux'
+import { addBlog, addLike, deleteBlog } from './reducers/blogReducer'
+
+
 const App = () => {
-  const [blogs, setBlogs] = useState([])
+  const dispatch = useDispatch()
+  const blogs = useSelector(state => state)
   const [user, setUser] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -19,9 +24,11 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs(blogs)
+      blogs.map(blog =>
+        dispatch(addBlog(blog))
+      )
     )
-  }, [])
+  }, [dispatch])
 
   useEffect(() => {
     const user = storage.loadUser()
@@ -58,7 +65,7 @@ const App = () => {
     try {
       const newBlog = await blogService.create(blog)
       blogFormRef.current.toggleVisibility()
-      setBlogs(blogs.concat(newBlog))
+      dispatch(addBlog(newBlog))
       notifyWith(`a new blog '${newBlog.title}' by ${newBlog.author} added!`)
     } catch (exception) {
       console.log(exception)
@@ -69,7 +76,7 @@ const App = () => {
     const blogToLike = blogs.find(b => b.id === id)
     const likedBlog = { ...blogToLike, likes: blogToLike.likes + 1, user: blogToLike.user.id }
     await blogService.update(likedBlog)
-    setBlogs(blogs.map(b => b.id === id ? { ...blogToLike, likes: blogToLike.likes + 1 } : b))
+    dispatch(addLike(id))
   }
 
   const handleRemove = async (id) => {
@@ -77,7 +84,7 @@ const App = () => {
     const ok = window.confirm(`Remove blog ${blogToRemove.title} by ${blogToRemove.author}`)
     if (ok) {
       await blogService.remove(id)
-      setBlogs(blogs.filter(b => b.id !== id))
+      dispatch(deleteBlog(id))
     }
   }
 
