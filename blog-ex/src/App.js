@@ -11,15 +11,16 @@ import storage from './utils/storage'
 import { useSelector, useDispatch } from 'react-redux'
 import { addBlog, addLike, deleteBlog } from './reducers/blogReducer'
 import { updateUser, logoutUser } from './reducers/currentUserReducer'
+import { addNotification, clearNotification } from './reducers/notificationReducer'
 
 
 const App = () => {
   const dispatch = useDispatch()
   const blogs = useSelector(state => state.blogs)
   const user = useSelector(state => state.currentUser)
+  const notification = useSelector(state => state.notification)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [notification, setNotification] = useState(null)
 
   const blogFormRef = React.createRef()
 
@@ -38,11 +39,9 @@ const App = () => {
   }, [dispatch])
 
   const notifyWith = (message, type = 'success') => {
-    setNotification({
-      message, type
-    })
+    dispatch(addNotification(message, type))
     setTimeout(() => {
-      setNotification(null)
+      dispatch(clearNotification())
     }, 5000)
   }
 
@@ -100,7 +99,7 @@ const App = () => {
       <div>
         <h2>login to application</h2>
 
-        <Notification notification={notification} />
+        <Notification />
 
         <form onSubmit={handleLogin}>
           <div>
