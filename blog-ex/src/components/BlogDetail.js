@@ -5,6 +5,20 @@ import { useSelector } from 'react-redux'
 
 import blogService from '../services/blogs'
 
+import styled from 'styled-components'
+
+const SexyBlog = styled.div`
+  padding: 1em;
+  background: papayawhip;
+  border-radius: 0 0 10px 10px;
+  font-family: sans-serif;
+`
+
+const Item = styled.div`
+  padding: 0.5rem;
+  line-height: 2rem;
+`
+
 const BlogDetails = ({ handleLike, handleRemove, handleComment }) => {
   const [comment, setComment] = useState('')
   const [comments, setComments] = useState([])
@@ -24,13 +38,6 @@ const BlogDetails = ({ handleLike, handleRemove, handleComment }) => {
     return null
   }
 
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5
-  }
 
   const changeHandler = event => {
     event.preventDefault()
@@ -56,10 +63,10 @@ const BlogDetails = ({ handleLike, handleRemove, handleComment }) => {
   }
 
   return (
-    <div style={blogStyle} className='blog'>
+    <SexyBlog >
       <h1>{blog.title}</h1>
 
-      <div>
+      <Item>
         <a href={blog.url}>{blog.url}</a><br />
         {blog.likes} likes
         <button onClick={() => handleLike(blog.id)}>like</button><br />
@@ -68,7 +75,7 @@ const BlogDetails = ({ handleLike, handleRemove, handleComment }) => {
           <><br /><button onClick={() => handleRemove(blog.id)}>remove</button></>
           : ''
         }
-      </div>
+      </Item>
       <div>
         <form onSubmit={newComment}>
           Add comment: <input name="content" type="text" value={comment} onChange={changeHandler} />
@@ -76,7 +83,7 @@ const BlogDetails = ({ handleLike, handleRemove, handleComment }) => {
         </form>
       </div>
       {comments && showComments(comments)}
-    </div>
+    </SexyBlog>
   )
 }
 

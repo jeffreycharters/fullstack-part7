@@ -18,10 +18,32 @@ import { addUser } from './reducers/usersReducer'
 import { updateUser, logoutUser } from './reducers/currentUserReducer'
 import { addNotification, clearNotification } from './reducers/notificationReducer'
 
+import styled from 'styled-components'
+
 import {
   BrowserRouter as Router,
   Switch, Route, Link
 } from 'react-router-dom'
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  Paper,
+  AppBar,
+  Button, Toolbar,
+  IconButton
+} from '@material-ui/core'
+
+const Navigation = styled.div`
+  background: BurlyWood;
+  padding: 1em;
+`
+const Input = styled.input`
+  margin: 0.25em;
+`
 
 
 const App = () => {
@@ -126,7 +148,7 @@ const App = () => {
         <form onSubmit={handleLogin}>
           <div>
             username
-            <input
+            <Input
               id='username'
               value={username}
               onChange={({ target }) => setUsername(target.value)}
@@ -134,7 +156,7 @@ const App = () => {
           </div>
           <div>
             password
-            <input
+            <Input
               id='password'
               value={password}
               onChange={({ target }) => setPassword(target.value)}
@@ -148,19 +170,35 @@ const App = () => {
 
   const byLikes = (b1, b2) => b2.likes - b1.likes
 
-  const padding = {
-    padding: 5
-  }
-
   return (
     <Router>
+      <Navigation>
+        <AppBar position="static">
+          <Toolbar>
+            <IconButton edge="start" color="inherit" aria-label="menu">
+            </IconButton>
+            <Button color="inherit" component={Link} to="/">
+              home
+          </Button>
+            <Button color="inherit" component={Link} to="/blogs">
+              BLOGS
+          </Button>
+            <Button color="inherit" component={Link} to="/users">
+              users
+          </Button>
+            <Button color="secondary">
+              {user
+                ? <em>{user.name} logged in</em>
+                : <Link to="/login">Login</Link>
+              }
+            </Button>
+            {user
+              ? <Button color="inherit" onClick={handleLogout}>Logout</Button>
+              : ''}
+          </Toolbar>
+        </AppBar>
 
-      <div>
-        <Link style={padding} to="/">Home</Link>
-        <Link style={padding} to="/blogs">Blogs</Link>
-        <Link style={padding} to="/users">Users</Link>
-        <span style={padding}>{user.name} logged in <button onClick={handleLogout}>logout</button></span>
-      </div>
+      </Navigation>
 
       <Notification notification={notification} />
 
@@ -175,15 +213,25 @@ const App = () => {
             <BlogForm createBlog={createBlog} />
           </Togglable>
 
-          {blogs.sort(byLikes).map(blog =>
-            <Blog
-              key={blog.id}
-              blog={blog}
-              handleLike={handleLike}
-              handleRemove={handleRemove}
-              own={user.username === blog.user.username}
-            />
-          )}
+          <TableContainer component={Paper}>
+            <Table>
+              <TableBody>
+                {blogs.sort(byLikes).map(blog =>
+                  <TableRow key={blog.id}>
+                    <TableCell>
+                      <Blog
+                        key={blog.id}
+                        blog={blog}
+                        handleLike={handleLike}
+                        handleRemove={handleRemove}
+                        own={user.username === blog.user.username}
+                      />
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Route>
 
         <Route path="/users/:id">
